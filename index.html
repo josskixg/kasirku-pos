@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KasirKu — Offline-First UMKM POS & Bluetooth 58mm</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --accent: #10b981; --border: #334155; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 960px; margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { width: 42px; height: 42px; border-radius: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
+    .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .menu-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; text-align: left; color: var(--text); }
+    .menu-item:hover { border-color: var(--accent); }
+    .menu-item .price { color: var(--accent); font-weight: 700; margin-top: 4px; }
+    .menu-item .hpp { color: var(--muted); font-size: 0.75rem; }
+    input, button { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.9rem; }
+    button.primary { background: var(--accent); color: #052e16; font-weight: 700; border: none; cursor: pointer; width: 100%; margin-top: 8px; }
+    button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; width: 100%; margin-top: 8px; }
+    .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem; }
+    .stat-box { display: flex; gap: 12px; margin-bottom: 16px; }
+    .stat { flex: 1; background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 10px; }
+    .stat small { color: var(--muted); display: block; }
+    .stat strong { font-size: 1.2rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="logo.svg" alt="KasirKu Logo">
+      <div>
+        <h1>KasirKu POS</h1>
+        <small style="color:var(--muted)">100% Offline-First • Bluetooth ESC/POS 58mm • Laba HPP</small>
+      </div>
+    </div>
+    <button onclick="exportCSV()" style="cursor:pointer">Unduh CSV Rekap</button>
+  </header>
+
+  <div class="stat-box">
+    <div class="stat"><small>Omzet Hari Ini</small><strong id="statOmzet">Rp 0</strong></div>
+    <div class="stat"><small>Laba Bersih (Omzet - HPP)</small><strong id="statProfit">Rp 0</strong></div>
+    <div class="stat"><small>Total Transaksi</small><strong id="statTx">0</strong></div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Katalog Menu (Klik untuk Tambah ke Keranjang)</h2>
+        <div id="menuContainer" class="menu-list"></div>
+      </div>
+      <div class="card">
+        <h2>Tambah Produk Baru</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px">
+          <input id="newName" placeholder="Nama Menu">
+          <input id="newPrice" type="number" placeholder="Harga Jual">
+          <input id="newHpp" type="number" placeholder="Modal HPP">
+          <button onclick="addProduct()" style="background:var(--accent);color:#052e16;font-weight:700;cursor:pointer">+ Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Struk Kasir Aktif</h2>
+      <div id="cartList"></div>
+      <div style="margin-top:12px">
+        <div class="row"><span>Total Bayar</span><strong id="cartTotal">Rp 0</strong></div>
+        <div class="row"><span style="color:var(--muted)">Estimasi Laba</span><span id="cartProfit" style="color:var(--accent)">Rp 0</span></div>
+      </div>
+      <button class="primary" onclick="checkout(false)">Simpan Transaksi</button>
+      <button class="secondary" onclick="checkout(true)">Cetak Bluetooth 58mm + Simpan</button>
+      <button onclick="clearCart()" style="width:100%;margin-top:8px;cursor:pointer;color:var(--muted)">Kosongkan Keranjang</button>
+    </div>
+  </div>
+
+  <script src="pos-core.js"></script>
+  <script>
+    const defaultMenu = [
+      { id: 1, name: 'Kopi Susu Aren', price: 18000, hpp: 7500 },
+      { id: 2, name: 'Americano Ice', price: 15000, hpp: 4500 },
+      { id: 3, name: 'Roti Bakar Coklat', price: 16000, hpp: 6500 },
+      { id: 4, name: 'Kentang Goreng', price: 15000, hpp: 6000 }
+    ];
+    let products = JSON.parse(localStorage.getItem('kasirku_menu') || 'null') || defaultMenu;
+    let txs = JSON.parse(localStorage.getItem('kasirku_txs') || '[]');
+    let cart = [];
+
+    function render() {
+      const mc = document.getElementById('menuContainer');
+      mc.innerHTML = products.map(p => `
+        <button class="menu-item" onclick="addToCart(${p.id})">
+          <div>${p.name}</div>
+          <div class="price">${formatIDR(p.price)}</div>
+          <div class="hpp">HPP: ${formatIDR(p.hpp)}</div>
+        </button>
+      `).join('');
+
+      const cl = document.getElementById('cartList');
+      cl.innerHTML = cart.length ? cart.map(c => `
+        <div class="row">
+          <span>${c.name} x${c.qty}</span>
+          <span>${formatIDR(c.price * c.qty)}</span>
+        </div>
+      `).join('') : '<small style="color:var(--muted)">Keranjang kosong</small>';
+
+      const sum = calculateSummary(cart, 0);
+      document.getElementById('cartTotal').textContent = formatIDR(sum.total);
+      document.getElementById('cartProfit').textContent = formatIDR(sum.profit);
+
+      let omzet = 0, profit = 0;
+      txs.forEach(t => { omzet += t.total; profit += t.profit; });
+      document.getElementById('statOmzet').textContent = formatIDR(omzet);
+      document.getElementById('statProfit').textContent = formatIDR(profit);
+      document.getElementById('statTx').textContent = txs.length;
+    }
+
+    function addToCart(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      const existing = cart.find(x => x.id === id);
+      if (existing) existing.qty++;
+      else cart.push({ ...p, qty: 1 });
+      render();
+    }
+
+    function clearCart() { cart = []; render(); }
+
+    function addProduct() {
+      const name = document.getElementById('newName').value.trim();
+      const price = Number(document.getElementById('newPrice').value);
+      const hpp = Number(document.getElementById('newHpp').value);
+      if (!name || price <= 0) return;
+      products.push({ id: Date.now(), name, price, hpp });
+      localStorage.setItem('kasirku_menu', JSON.stringify(products));
+      document.getElementById('newName').value = '';
+      document.getElementById('newPrice').value = '';
+      document.getElementById('newHpp').value = '';
+      render();
+    }
+
+    async function checkout(printBt) {
+      if (!cart.length) return;
+      const sum = calculateSummary(cart, 0);
+      const orderId = String(txs.length + 1).padStart(4, '0');
+      if (printBt && navigator.bluetooth) {
+        try {
+          const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
+          const server = await dev.gatt.connect();
+          const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+          const chars = await service.getCharacteristics();
+          const bytes = encodeEscPos58mm('KASIRKU POS', orderId, cart, 0);
+          await chars[0].writeValue(bytes);
+        } catch (e) { alert('Bluetooth print info: ' + e.message); }
+      }
+      txs.push({ id: orderId, time: new Date().toISOString(), total: sum.total, profit: sum.profit, items: cart });
+      localStorage.setItem('kasirku_txs', JSON.stringify(txs));
+      cart = [];
+      render();
+    }
+
+    function exportCSV() {
+      const rows = ['OrderID,Waktu,TotalOmzet,LabaBersih'];
+      txs.forEach(t => rows.push(`${t.id},${t.time},${t.total},${t.profit}`));
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'rekap-kasirku.csv';
+      a.click();
+    }
+
+    render();
+  </script>
+</body>
+</html>
