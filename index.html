@@ -1,123 +1,1039 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KasirKu — Offline-First UMKM POS & Bluetooth 58mm</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <title>KasirKu POS — Offline-First UMKM Retail Engine & ESC/POS 58mm Console</title>
+  <meta name="description" content="Commercial Laravel 11 + Offline-First PWA Point of Sale, HPP/COGS Profit Engine & Web Bluetooth 58mm ESC/POS Thermal Printer Console.">
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="manifest" href="assets/brand/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --accent: #10b981; --border: #334155; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 960px; margin: 0 auto; }
-    header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand img { width: 42px; height: 42px; border-radius: 10px; }
-    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
-    .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-    .menu-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; text-align: left; color: var(--text); }
-    .menu-item:hover { border-color: var(--accent); }
-    .menu-item .price { color: var(--accent); font-weight: 700; margin-top: 4px; }
-    .menu-item .hpp { color: var(--muted); font-size: 0.75rem; }
-    input, button { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.9rem; }
-    button.primary { background: var(--accent); color: #052e16; font-weight: 700; border: none; cursor: pointer; width: 100%; margin-top: 8px; }
-    button.secondary { background: transparent; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; width: 100%; margin-top: 8px; }
-    .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem; }
-    .stat-box { display: flex; gap: 12px; margin-bottom: 16px; }
-    .stat { flex: 1; background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 10px; }
-    .stat small { color: var(--muted); display: block; }
-    .stat strong { font-size: 1.2rem; color: var(--accent); }
+    /* Supabase Dark Default + Full Daylight Theme Tokens */
+    :root, [data-theme="dark"] {
+      --bg-canvas: #171717;
+      --bg-surface: #0f0f0f;
+      --bg-elevated: #1f1f1f;
+      --bg-hover: #262626;
+      --bg-glass: rgba(23, 23, 23, 0.88);
+      --border-subtle: #2e2e2e;
+      --border-strong: #393939;
+      --text-primary: #fafafa;
+      --text-secondary: #b4b4b4;
+      --text-muted: #898989;
+      --brand: #3ecf8e;
+      --brand-strong: #00c573;
+      --brand-bg: rgba(62, 207, 142, 0.12);
+      --brand-border: rgba(62, 207, 142, 0.35);
+      --btn-primary-fg: #052e16;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --paper-bg: #121314;
+      --paper-fg: #e5e7eb;
+      --paper-border: #2e2e2e;
+    }
+
+    [data-theme="light"] {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --bg-hover: #e2e8f0;
+      --bg-glass: rgba(255, 255, 255, 0.92);
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --brand: #059669;
+      --brand-strong: #047857;
+      --brand-bg: rgba(5, 150, 105, 0.10);
+      --brand-border: rgba(5, 150, 105, 0.35);
+      --btn-primary-fg: #ffffff;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --paper-bg: #fffef9;
+      --paper-fg: #1e293b;
+      --paper-border: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .mono, .num {
+      font-family: 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .code-label {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Top Operational Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      background: var(--brand-bg);
+      color: var(--brand);
+      border: 1px solid var(--brand-border);
+    }
+
+    .dot-live {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-elevated);
+    }
+
+    .btn-pill {
+      border-radius: 9999px;
+      padding: 8px 18px;
+    }
+
+    .btn-brand {
+      background: var(--brand);
+      color: var(--btn-primary-fg);
+      border-color: var(--brand);
+      font-weight: 600;
+    }
+
+    .btn-brand:hover {
+      background: var(--brand-strong);
+      border-color: var(--brand-strong);
+    }
+
+    .btn-outline-brand {
+      background: var(--brand-bg);
+      color: var(--brand);
+      border-color: var(--brand-border);
+    }
+
+    .btn-outline-brand:hover {
+      border-color: var(--brand);
+    }
+
+    /* Telemetry Strip */
+    .telemetry-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+    }
+
+    .metric-cell {
+      padding: 12px 20px;
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-cell:last-child {
+      border-right: none;
+    }
+
+    .metric-val {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-val.emerald {
+      color: var(--brand);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Main Operate & Monitor Split Layout */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      min-height: calc(100vh - 122px);
+    }
+
+    .pane-catalog {
+      padding: 20px;
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pane-inspector {
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Controls Bar */
+    .catalog-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .input-field {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--brand);
+    }
+
+    .kbd-hint {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .category-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .cat-pill.active {
+      background: var(--brand-bg);
+      color: var(--brand);
+      border-color: var(--brand-border);
+    }
+
+    /* SKU Product Grid */
+    .sku-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 12px;
+    }
+
+    .sku-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.15s ease, transform 0.1s ease;
+      color: var(--text-primary);
+    }
+
+    .sku-card:hover {
+      border-color: var(--brand);
+    }
+
+    .sku-card:active {
+      transform: scale(0.99);
+    }
+
+    .sku-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .sku-code {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .sku-margin-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      background: var(--brand-bg);
+      color: var(--brand);
+      border: 1px solid var(--brand-border);
+    }
+
+    .sku-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: var(--text-primary);
+    }
+
+    .sku-bottom {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .sku-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .sku-hpp {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Add Product Panel & Transaction Ledger */
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .add-sku-form {
+      display: grid;
+      grid-template-columns: 110px 1.4fr 1fr 1fr 110px auto;
+      gap: 8px;
+    }
+
+    /* Ledger Table */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table.ledger {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table.ledger th, table.ledger td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    table.ledger th {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-family: 'Source Code Pro', monospace;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+
+    /* Right Inspector / Active Register */
+    .register-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cart-items {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .cart-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      background: var(--bg-canvas);
+    }
+
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .summary-lines {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+    }
+
+    .sum-row.total {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .sum-row.profit {
+      color: var(--brand);
+      font-size: 12px;
+    }
+
+    /* 58mm Thermal Paper & Hex Inspector */
+    .thermal-preview-box {
+      background: var(--paper-bg);
+      color: var(--paper-fg);
+      border: 1px solid var(--paper-border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .hex-inspector {
+      margin-top: 10px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 10px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 11px;
+      color: var(--brand);
+      word-break: break-all;
+    }
+
+    /* Sticky Mobile Cart Bar (<768px) */
+    .mobile-cart-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--brand-border);
+      padding: 10px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1080px) {
+      .telemetry-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .add-sku-form {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .workspace {
+        grid-template-columns: 1fr;
+        padding-bottom: 72px;
+      }
+      .pane-catalog {
+        border-right: none;
+        padding: 14px;
+      }
+      .telemetry-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+      .metric-cell:nth-child(5) {
+        grid-column: span 2;
+      }
+      .mobile-cart-bar {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <img src="logo.svg" alt="KasirKu Logo">
+
+  <!-- Top Operational Header -->
+  <header class="topbar">
+    <div class="brand-cluster">
+      <img src="logo.svg" alt="KasirKu POS Logo" class="brand-logo">
       <div>
-        <h1>KasirKu POS</h1>
-        <small style="color:var(--muted)">100% Offline-First • Bluetooth ESC/POS 58mm • Laba HPP</small>
+        <div class="brand-title">
+          <span>KasirKu POS</span>
+          <span class="pill-status"><span class="dot-live"></span>OFFLINE-FIRST PWA • ESC/POS 58MM</span>
+        </div>
+        <div class="code-label">LARAVEL 11 RETAIL ENGINE + HPP MARGIN TELEMETRY</div>
       </div>
     </div>
-    <button onclick="exportCSV()" style="cursor:pointer">Unduh CSV Rekap</button>
+
+    <div class="topbar-actions">
+      <button type="button" class="btn" id="syncBatchBtn" onclick="simulateLaravelSync()">
+        <span class="mono" id="syncBadge">SYNC QUEUE (0)</span>
+      </button>
+      <button type="button" class="btn" onclick="exportShiftCSV()">Unduh CSV Shift</button>
+      <button type="button" class="btn" onclick="exportShiftJSON()">Export Z-Report JSON</button>
+      <button type="button" class="btn btn-pill" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Light/Dark Mode">
+        <span id="themeIcon">☀</span> <span id="themeLabel">Light Mode</span>
+      </button>
+    </div>
   </header>
 
-  <div class="stat-box">
-    <div class="stat"><small>Omzet Hari Ini</small><strong id="statOmzet">Rp 0</strong></div>
-    <div class="stat"><small>Laba Bersih (Omzet - HPP)</small><strong id="statProfit">Rp 0</strong></div>
-    <div class="stat"><small>Total Transaksi</small><strong id="statTx">0</strong></div>
-  </div>
+  <!-- Live Telemetry Strip -->
+  <section class="telemetry-strip" aria-label="Shift Financial Telemetry">
+    <div class="metric-cell">
+      <span class="code-label">OMZET KOTOR (SHIFT)</span>
+      <span class="metric-val num" id="statOmzet">Rp 0</span>
+      <span class="metric-sub" id="statTxCount">0 transaksi selesai</span>
+    </div>
+    <div class="metric-cell">
+      <span class="code-label">TOTAL MODAL HPP (COGS)</span>
+      <span class="metric-val num" id="statHpp">Rp 0</span>
+      <span class="metric-sub">Akumulasi beban pokok</span>
+    </div>
+    <div class="metric-cell">
+      <span class="code-label">LABA BERSIH (NET PROFIT)</span>
+      <span class="metric-val num emerald" id="statProfit">Rp 0</span>
+      <span class="metric-sub num" id="statMargin">Margin 0.0%</span>
+    </div>
+    <div class="metric-cell">
+      <span class="code-label">STREAM ESC/POS 58MM</span>
+      <span class="metric-val num" id="statByteLen">0 B</span>
+      <span class="metric-sub mono">0x1B 0x40 • GS V A 0x10</span>
+    </div>
+    <div class="metric-cell">
+      <span class="code-label">DYNAMIC QRIS EMVCO CRC16</span>
+      <span class="metric-val mono emerald" id="statQrisCrc">0xFFFF</span>
+      <span class="metric-sub mono" id="statStoreCode">KEDAI KUJANG • SHIFT-PAGI</span>
+    </div>
+  </section>
 
-  <div class="grid">
-    <div>
-      <div class="card">
-        <h2>Katalog Menu (Klik untuk Tambah ke Keranjang)</h2>
-        <div id="menuContainer" class="menu-list"></div>
-      </div>
-      <div class="card">
-        <h2>Tambah Produk Baru</h2>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px">
-          <input id="newName" placeholder="Nama Menu">
-          <input id="newPrice" type="number" placeholder="Harga Jual">
-          <input id="newHpp" type="number" placeholder="Modal HPP">
-          <button onclick="addProduct()" style="background:var(--accent);color:#052e16;font-weight:700;cursor:pointer">+ Simpan</button>
+  <!-- Main Operate & Monitor Console -->
+  <main class="workspace">
+    <!-- Left Workspace: Catalog + Quick SKU Creator + Shift Ledger -->
+    <div class="pane-catalog">
+      <div class="catalog-toolbar">
+        <div class="search-box">
+          <input type="search" id="searchInput" class="input-field" placeholder="Cari nama produk atau scan kode SKU..." oninput="renderCatalog()">
+          <span class="kbd-hint">/</span>
+        </div>
+        <div class="category-pills" id="categoryPills">
+          <button type="button" class="cat-pill active" onclick="setCategory('ALL')">Semua</button>
+          <button type="button" class="cat-pill" onclick="setCategory('COFFEE')">Kopi & Minuman</button>
+          <button type="button" class="cat-pill" onclick="setCategory('FOOD')">Makanan Utama</button>
+          <button type="button" class="cat-pill" onclick="setCategory('SNACK')">Snack & Roti</button>
         </div>
       </div>
+
+      <!-- Product SKU Grid -->
+      <div class="sku-grid" id="menuContainer"></div>
+
+      <!-- Quick Add Product with HPP -->
+      <section class="panel-card" aria-label="Tambah SKU Produk">
+        <div class="panel-header">
+          <span class="code-label">REGISTRASI SKU & KALKULATOR HPP BARU</span>
+          <span class="code-label">AUTO-SAVE LOCALSTORAGE</span>
+        </div>
+        <div class="add-sku-form">
+          <input id="newSku" class="input-field mono" placeholder="SKU (KOP-09)">
+          <input id="newName" class="input-field" placeholder="Nama Produk / Menu">
+          <input id="newPrice" type="number" class="input-field num" placeholder="Harga Jual (Rp)">
+          <input id="newHpp" type="number" class="input-field num" placeholder="Modal HPP (Rp)">
+          <select id="newCat" class="input-field">
+            <option value="COFFEE">Kopi & Minuman</option>
+            <option value="FOOD">Makanan Utama</option>
+            <option value="SNACK">Snack & Roti</option>
+          </select>
+          <button type="button" class="btn btn-brand" onclick="addProduct()">+ Simpan SKU</button>
+        </div>
+      </section>
+
+      <!-- Shift Transaction Ledger -->
+      <section class="panel-card" aria-label="Riwayat Transaksi Shift">
+        <div class="panel-header">
+          <span class="code-label">JURNAL TRANSAKSI SHIFT & STATUS SYNC LARAVEL 11</span>
+          <button type="button" class="btn" onclick="seedDemoTransactions()">+ Isi Sample Transaksi</button>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Metode</th>
+                <th>Item</th>
+                <th>Total Bayar</th>
+                <th>HPP</th>
+                <th>Laba Bersih</th>
+                <th>Status Sync</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+        </div>
+      </section>
     </div>
 
-    <div class="card">
-      <h2>Struk Kasir Aktif</h2>
-      <div id="cartList"></div>
-      <div style="margin-top:12px">
-        <div class="row"><span>Total Bayar</span><strong id="cartTotal">Rp 0</strong></div>
-        <div class="row"><span style="color:var(--muted)">Estimasi Laba</span><span id="cartProfit" style="color:var(--accent)">Rp 0</span></div>
+    <!-- Right Workspace: Register Cart + ESC/POS 58mm Thermal Preview + Hex Dump -->
+    <aside class="pane-inspector" id="registerAnchor">
+      <div>
+        <div class="register-section">
+          <div class="panel-header" style="margin-bottom:4px;">
+            <span class="code-label">REGISTER KASIR AKTIF</span>
+            <button type="button" class="btn" style="padding:3px 8px;font-size:11px;" onclick="clearCart()">Reset (Esc)</button>
+          </div>
+
+          <div class="cart-items" id="cartList"></div>
+
+          <div class="calc-grid">
+            <div>
+              <label class="code-label" for="discountInput">DISKON VOUCHER (RP)</label>
+              <input id="discountInput" type="number" min="0" step="1000" value="0" class="input-field num" oninput="render()">
+            </div>
+            <div>
+              <label class="code-label" for="paymentMethod">METODE & PAJAK PPN</label>
+              <div style="display:flex;gap:6px;">
+                <select id="paymentMethod" class="input-field" onchange="render()">
+                  <option value="QRIS">QRIS Dynamic</option>
+                  <option value="CASH">Tunai (Cash)</option>
+                  <option value="TRANSFER">Transfer Bank</option>
+                </select>
+                <button type="button" class="btn" id="taxToggleBtn" onclick="toggleTax()" title="Toggle PPN 11%">PPN 0%</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-lines">
+            <div class="sum-row"><span>Subtotal</span><span class="num" id="cartSubtotal">Rp 0</span></div>
+            <div class="sum-row"><span>Potongan Diskon</span><span class="num" id="cartDiscount">-Rp 0</span></div>
+            <div class="sum-row"><span>PPN (<span id="cartTaxRate">0</span>%)</span><span class="num" id="cartTax">Rp 0</span></div>
+            <div class="sum-row total"><span>Total Tagihan</span><span class="num" id="cartTotal">Rp 0</span></div>
+            <div class="sum-row profit">
+              <span>Estimasi Laba Bersih (dikurangi HPP)</span>
+              <span class="num" id="cartProfit">Rp 0 (0%)</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;">
+            <button type="button" class="btn btn-brand btn-pill" onclick="checkout(false)">
+              Simpan Transaksi Offline (Enter)
+            </button>
+            <button type="button" class="btn btn-outline-brand btn-pill" onclick="checkout(true)">
+              Cetak Bluetooth 58mm + Simpan
+            </button>
+          </div>
+        </div>
+
+        <!-- Live 58mm ESC/POS Thermal Paper & Hex Inspector -->
+        <div class="register-section" style="border-bottom:none;">
+          <div class="panel-header">
+            <span class="code-label">PREVIEW STRUK THERMAL 58MM (32 CHAR)</span>
+            <span class="code-label" id="previewOrderTag">#ORD-0001</span>
+          </div>
+          <pre class="thermal-preview-box" id="thermalTextPreview"></pre>
+
+          <div style="margin-top:12px;">
+            <div class="panel-header" style="margin-bottom:4px;">
+              <span class="code-label">INSPEKTOR STREAM HEX ESC/POS & QRIS TLV</span>
+              <span class="code-label" id="hexByteBadge">0 BYTES</span>
+            </div>
+            <div class="hex-inspector" id="hexStreamBox"></div>
+          </div>
+        </div>
       </div>
-      <button class="primary" onclick="checkout(false)">Simpan Transaksi</button>
-      <button class="secondary" onclick="checkout(true)">Cetak Bluetooth 58mm + Simpan</button>
-      <button onclick="clearCart()" style="width:100%;margin-top:8px;cursor:pointer;color:var(--muted)">Kosongkan Keranjang</button>
+    </aside>
+  </main>
+
+  <!-- Sticky Mobile Bottom Checkout Bar -->
+  <div class="mobile-cart-bar">
+    <div>
+      <div class="code-label" id="mobileItemCount">0 ITEM DI KERANJANG</div>
+      <div class="metric-val num emerald" id="mobileTotalLabel" style="font-size:16px;">Rp 0</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="#registerAnchor" class="btn">Lihat Struk</a>
+      <button type="button" class="btn btn-brand btn-pill" onclick="checkout(false)">Bayar</button>
     </div>
   </div>
 
   <script src="pos-core.js"></script>
   <script>
     const defaultMenu = [
-      { id: 1, name: 'Kopi Susu Aren', price: 18000, hpp: 7500 },
-      { id: 2, name: 'Americano Ice', price: 15000, hpp: 4500 },
-      { id: 3, name: 'Roti Bakar Coklat', price: 16000, hpp: 6500 },
-      { id: 4, name: 'Kentang Goreng', price: 15000, hpp: 6000 }
+      { id: 1, sku: 'KOP-001', name: 'Kopi Susu Gula Aren', category: 'COFFEE', price: 18000, hpp: 7500 },
+      { id: 2, sku: 'KOP-002', name: 'Ice Americano Arabica', category: 'COFFEE', price: 15000, hpp: 4500 },
+      { id: 3, sku: 'KOP-003', name: 'Matcha Latte Oatmilk', category: 'COFFEE', price: 24000, hpp: 10500 },
+      { id: 4, sku: 'FOD-001', name: 'Nasi Sei Sapi Sambal Luat', category: 'FOOD', price: 32000, hpp: 15500 },
+      { id: 5, sku: 'FOD-002', name: 'Mie Nyemek Spesial Telur', category: 'FOOD', price: 22000, hpp: 9500 },
+      { id: 6, sku: 'SNK-001', name: 'Roti Bakar Coklat Keju', category: 'SNACK', price: 16000, hpp: 6500 },
+      { id: 7, sku: 'SNK-002', name: 'French Fries Truffle Mayo', category: 'SNACK', price: 18000, hpp: 7000 },
+      { id: 8, sku: 'SNK-003', name: 'Croissant Butter Almond', category: 'SNACK', price: 21000, hpp: 9000 }
     ];
-    let products = JSON.parse(localStorage.getItem('kasirku_menu') || 'null') || defaultMenu;
-    let txs = JSON.parse(localStorage.getItem('kasirku_txs') || '[]');
-    let cart = [];
+
+    const sampleInitialTxs = [
+      {
+        id: 'ORD-0001',
+        time: '2026-11-09T08:15:00.000Z',
+        method: 'QRIS',
+        subtotal: 54000,
+        discount: 0,
+        tax: 0,
+        total: 54000,
+        hppTotal: 22500,
+        profit: 31500,
+        synced: true,
+        items: [
+          { id: 1, sku: 'KOP-001', name: 'Kopi Susu Gula Aren', price: 18000, hpp: 7500, qty: 3 }
+        ]
+      },
+      {
+        id: 'ORD-0002',
+        time: '2026-11-09T08:42:00.000Z',
+        method: 'CASH',
+        subtotal: 48000,
+        discount: 2000,
+        tax: 0,
+        total: 46000,
+        hppTotal: 22000,
+        profit: 24000,
+        synced: false,
+        items: [
+          { id: 4, sku: 'FOD-001', name: 'Nasi Sei Sapi Sambal Luat', price: 32000, hpp: 15500, qty: 1 },
+          { id: 6, sku: 'SNK-001', name: 'Roti Bakar Coklat Keju', price: 16000, hpp: 6500, qty: 1 }
+        ]
+      }
+    ];
+
+    let products = JSON.parse(localStorage.getItem('kasirku_menu_v2') || 'null') || defaultMenu;
+    let txs = JSON.parse(localStorage.getItem('kasirku_txs_v2') || 'null') || sampleInitialTxs;
+    let cart = [
+      { id: 1, sku: 'KOP-001', name: 'Kopi Susu Gula Aren', category: 'COFFEE', price: 18000, hpp: 7500, qty: 2 },
+      { id: 6, sku: 'SNK-001', name: 'Roti Bakar Coklat Keju', category: 'SNACK', price: 16000, hpp: 6500, qty: 1 }
+    ];
+    let activeCategory = 'ALL';
+    let taxEnabled = false;
+
+    // Theme initialization (Supabase Dark default + Light Mode persisted)
+    function initTheme() {
+      const saved = localStorage.getItem('kasirku_theme') || 'dark';
+      applyTheme(saved);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('kasirku_theme', theme);
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (theme === 'light') {
+        icon.textContent = '☾';
+        label.textContent = 'Supabase Dark';
+      } else {
+        icon.textContent = '☀';
+        label.textContent = 'Light Mode';
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      const buttons = document.querySelectorAll('#categoryPills .cat-pill');
+      buttons.forEach(btn => {
+        const match = (cat === 'ALL' && btn.textContent.includes('Semua')) ||
+          (cat === 'COFFEE' && btn.textContent.includes('Kopi')) ||
+          (cat === 'FOOD' && btn.textContent.includes('Makanan')) ||
+          (cat === 'SNACK' && btn.textContent.includes('Snack'));
+        btn.classList.toggle('active', match);
+      });
+      renderCatalog();
+    }
+
+    function toggleTax() {
+      taxEnabled = !taxEnabled;
+      const btn = document.getElementById('taxToggleBtn');
+      btn.textContent = taxEnabled ? 'PPN 11%' : 'PPN 0%';
+      btn.classList.toggle('btn-outline-brand', taxEnabled);
+      render();
+    }
+
+    function renderCatalog() {
+      const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const filtered = products.filter(p => {
+        const matchCat = activeCategory === 'ALL' || (p.category || 'COFFEE') === activeCategory;
+        const matchQ = !query || p.name.toLowerCase().includes(query) || String(p.sku || '').toLowerCase().includes(query);
+        return matchCat && matchQ;
+      });
+
+      const mc = document.getElementById('menuContainer');
+      mc.innerHTML = filtered.map(p => {
+        const marginPct = p.price > 0 ? Math.round(((p.price - p.hpp) / p.price) * 100) : 0;
+        return `
+          <button type="button" class="sku-card" onclick="addToCart(${p.id})">
+            <div>
+              <div class="sku-top">
+                <span class="sku-code mono">${p.sku || 'SKU-01'}</span>
+                <span class="sku-margin-badge mono">+${marginPct}% LABA</span>
+              </div>
+              <div class="sku-name" style="margin-top:6px;">${p.name}</div>
+            </div>
+            <div class="sku-bottom">
+              <span class="sku-price num">${formatIDR(p.price)}</span>
+              <span class="sku-hpp num">HPP ${formatIDR(p.hpp)}</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
 
     function render() {
-      const mc = document.getElementById('menuContainer');
-      mc.innerHTML = products.map(p => `
-        <button class="menu-item" onclick="addToCart(${p.id})">
-          <div>${p.name}</div>
-          <div class="price">${formatIDR(p.price)}</div>
-          <div class="hpp">HPP: ${formatIDR(p.hpp)}</div>
-        </button>
-      `).join('');
+      renderCatalog();
+
+      const discountVal = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      const taxRate = taxEnabled ? 11 : 0;
+      const method = document.getElementById('paymentMethod').value || 'QRIS';
+      const nextOrderId = 'ORD-' + String(txs.length + 1).padStart(4, '0');
 
       const cl = document.getElementById('cartList');
-      cl.innerHTML = cart.length ? cart.map(c => `
-        <div class="row">
-          <span>${c.name} x${c.qty}</span>
-          <span>${formatIDR(c.price * c.qty)}</span>
-        </div>
-      `).join('') : '<small style="color:var(--muted)">Keranjang kosong</small>';
+      if (cart.length === 0) {
+        cl.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text-muted);border:1px dashed var(--border-subtle);border-radius:6px;">Keranjang kosong — klik menu di kiri untuk mulai transaksi.</div>`;
+      } else {
+        cl.innerHTML = cart.map(c => `
+          <div class="cart-row">
+            <div>
+              <div style="font-weight:500;">${c.name}</div>
+              <div class="code-label">${c.sku || 'SKU'} • ${formatIDR(c.price)} (HPP ${formatIDR(c.hpp)})</div>
+            </div>
+            <div class="qty-controls">
+              <button type="button" class="qty-btn" onclick="changeQty(${c.id}, -1)">-</button>
+              <span class="num" style="min-width:18px;text-align:center;">${c.qty}</span>
+              <button type="button" class="qty-btn" onclick="changeQty(${c.id}, 1)">+</button>
+            </div>
+            <div class="num" style="font-weight:600;">${formatIDR(c.price * c.qty)}</div>
+          </div>
+        `).join('');
+      }
 
-      const sum = calculateSummary(cart, 0);
+      const sum = calculateSummary(cart, discountVal, taxRate);
+      document.getElementById('cartSubtotal').textContent = formatIDR(sum.subtotal);
+      document.getElementById('cartDiscount').textContent = '-' + formatIDR(sum.discount);
+      document.getElementById('cartTaxRate').textContent = sum.taxRatePercent;
+      document.getElementById('cartTax').textContent = formatIDR(sum.taxAmount);
       document.getElementById('cartTotal').textContent = formatIDR(sum.total);
-      document.getElementById('cartProfit').textContent = formatIDR(sum.profit);
+      document.getElementById('cartProfit').textContent = `${formatIDR(sum.profit)} (${sum.marginPercent}%)`;
 
-      let omzet = 0, profit = 0;
-      txs.forEach(t => { omzet += t.total; profit += t.profit; });
-      document.getElementById('statOmzet').textContent = formatIDR(omzet);
-      document.getElementById('statProfit').textContent = formatIDR(profit);
-      document.getElementById('statTx').textContent = txs.length;
+      // Mobile bar
+      document.getElementById('mobileItemCount').textContent = `${sum.itemCount} ITEM DI KERANJANG`;
+      document.getElementById('mobileTotalLabel').textContent = formatIDR(sum.total);
+
+      // ESC/POS 58mm & QRIS Preview
+      const previewItems = cart.length ? cart : [{ name: 'Sample Item Preview', price: 18000, hpp: 7500, qty: 1 }];
+      const bytes = encodeEscPos58mm('KEDAI KUJANG', nextOrderId, previewItems, discountVal, taxRate, method, 0);
+      const qrisStr = buildDynamicQris('KEDAI KUJANG', nextOrderId, sum.total || 18000);
+      const qrisCrc = qrisStr.slice(-4);
+
+      document.getElementById('previewOrderTag').textContent = '#' + nextOrderId;
+      document.getElementById('statByteLen').textContent = bytes.length + ' B';
+      document.getElementById('hexByteBadge').textContent = bytes.length + ' BYTES';
+      document.getElementById('statQrisCrc').textContent = '0x' + qrisCrc;
+
+      const cleanPreview = new TextDecoder().decode(bytes)
+        .replace(/\x1B[@a!E][\x00-\x1F]?/g, '')
+        .replace(/\x1D\x56\x41\x10/g, '[PAPER_CUT_GS_V_A]');
+      document.getElementById('thermalTextPreview').textContent = cleanPreview.trim();
+      document.getElementById('hexStreamBox').textContent =
+        `ESC/POS HEX: ${bytesToHexDump(bytes, 36)}\nQRIS EMVCo : ${qrisStr}`;
+
+      // Shift Telemetry & Ledger
+      let shiftOmzet = 0;
+      let shiftHpp = 0;
+      let shiftProfit = 0;
+      let unsyncedCount = 0;
+
+      txs.forEach(t => {
+        shiftOmzet += Number(t.total) || 0;
+        shiftHpp += Number(t.hppTotal) || 0;
+        shiftProfit += Number(t.profit) || 0;
+        if (!t.synced) unsyncedCount++;
+      });
+
+      const shiftMargin = shiftOmzet > 0 ? ((shiftProfit / shiftOmzet) * 100).toFixed(1) : '0.0';
+      document.getElementById('statOmzet').textContent = formatIDR(shiftOmzet);
+      document.getElementById('statHpp').textContent = formatIDR(shiftHpp);
+      document.getElementById('statProfit').textContent = formatIDR(shiftProfit);
+      document.getElementById('statMargin').textContent = `Margin Bersih ${shiftMargin}%`;
+      document.getElementById('statTxCount').textContent = `${txs.length} transaksi selesai`;
+      document.getElementById('syncBadge').textContent = `SYNC LARAVEL (${unsyncedCount})`;
+
+      const lb = document.getElementById('ledgerBody');
+      lb.innerHTML = txs.slice().reverse().slice(0, 8).map(t => `
+        <tr>
+          <td class="mono">${t.id}</td>
+          <td class="mono">${t.method || 'QRIS'}</td>
+          <td>${(t.items || []).map(i => `${i.name} x${i.qty}`).join(', ')}</td>
+          <td class="num">${formatIDR(t.total)}</td>
+          <td class="num">${formatIDR(t.hppTotal || 0)}</td>
+          <td class="num" style="color:var(--brand);font-weight:600;">${formatIDR(t.profit)}</td>
+          <td class="mono" style="color:${t.synced ? 'var(--brand)' : 'var(--warning)'};">
+            ${t.synced ? 'SYNCED' : 'QUEUED_IDB'}
+          </td>
+        </tr>
+      `).join('');
     }
 
     function addToCart(id) {
@@ -129,15 +1045,31 @@
       render();
     }
 
-    function clearCart() { cart = []; render(); }
+    function changeQty(id, delta) {
+      const idx = cart.findIndex(x => x.id === id);
+      if (idx === -1) return;
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      render();
+    }
+
+    function clearCart() {
+      cart = [];
+      document.getElementById('discountInput').value = 0;
+      render();
+    }
 
     function addProduct() {
+      const sku = (document.getElementById('newSku').value.trim() || 'SKU-' + Math.floor(100 + Math.random() * 899)).toUpperCase();
       const name = document.getElementById('newName').value.trim();
       const price = Number(document.getElementById('newPrice').value);
       const hpp = Number(document.getElementById('newHpp').value);
+      const category = document.getElementById('newCat').value || 'COFFEE';
       if (!name || price <= 0) return;
-      products.push({ id: Date.now(), name, price, hpp });
-      localStorage.setItem('kasirku_menu', JSON.stringify(products));
+
+      products.push({ id: Date.now(), sku, name, category, price, hpp: Math.max(0, hpp) });
+      localStorage.setItem('kasirku_menu_v2', JSON.stringify(products));
+      document.getElementById('newSku').value = '';
       document.getElementById('newName').value = '';
       document.getElementById('newPrice').value = '';
       document.getElementById('newHpp').value = '';
@@ -146,34 +1078,113 @@
 
     async function checkout(printBt) {
       if (!cart.length) return;
-      const sum = calculateSummary(cart, 0);
-      const orderId = String(txs.length + 1).padStart(4, '0');
+      const discountVal = Math.max(0, Number(document.getElementById('discountInput').value) || 0);
+      const taxRate = taxEnabled ? 11 : 0;
+      const method = document.getElementById('paymentMethod').value || 'QRIS';
+      const sum = calculateSummary(cart, discountVal, taxRate);
+      const orderId = 'ORD-' + String(txs.length + 1).padStart(4, '0');
+
       if (printBt && navigator.bluetooth) {
         try {
-          const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
+          const dev = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+          });
           const server = await dev.gatt.connect();
           const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
           const chars = await service.getCharacteristics();
-          const bytes = encodeEscPos58mm('KASIRKU POS', orderId, cart, 0);
+          const bytes = encodeEscPos58mm('KEDAI KUJANG', orderId, cart, discountVal, taxRate, method, 0);
           await chars[0].writeValue(bytes);
-        } catch (e) { alert('Bluetooth print info: ' + e.message); }
+        } catch (e) {
+          alert('Web Bluetooth 58mm Info: ' + e.message);
+        }
       }
-      txs.push({ id: orderId, time: new Date().toISOString(), total: sum.total, profit: sum.profit, items: cart });
-      localStorage.setItem('kasirku_txs', JSON.stringify(txs));
+
+      txs.push({
+        id: orderId,
+        time: new Date().toISOString(),
+        method,
+        subtotal: sum.subtotal,
+        discount: sum.discount,
+        tax: sum.taxAmount,
+        total: sum.total,
+        hppTotal: sum.hppTotal,
+        profit: sum.profit,
+        synced: false,
+        items: cart.map(i => ({ ...i }))
+      });
+
+      localStorage.setItem('kasirku_txs_v2', JSON.stringify(txs));
       cart = [];
+      document.getElementById('discountInput').value = 0;
       render();
     }
 
-    function exportCSV() {
-      const rows = ['OrderID,Waktu,TotalOmzet,LabaBersih'];
-      txs.forEach(t => rows.push(`${t.id},${t.time},${t.total},${t.profit}`));
+    function simulateLaravelSync() {
+      txs = txs.map(t => ({ ...t, synced: true }));
+      localStorage.setItem('kasirku_txs_v2', JSON.stringify(txs));
+      render();
+    }
+
+    function seedDemoTransactions() {
+      const nextNum = txs.length + 1;
+      txs.push({
+        id: 'ORD-' + String(nextNum).padStart(4, '0'),
+        time: new Date().toISOString(),
+        method: 'QRIS',
+        subtotal: 42000,
+        discount: 0,
+        tax: 0,
+        total: 42000,
+        hppTotal: 18000,
+        profit: 24000,
+        synced: false,
+        items: [
+          { id: 3, sku: 'KOP-003', name: 'Matcha Latte Oatmilk', price: 24000, hpp: 10500, qty: 1 },
+          { id: 1, sku: 'KOP-001', name: 'Kopi Susu Gula Aren', price: 18000, hpp: 7500, qty: 1 }
+        ]
+      });
+      localStorage.setItem('kasirku_txs_v2', JSON.stringify(txs));
+      render();
+    }
+
+    function exportShiftCSV() {
+      const rows = ['OrderID,Waktu,Metode,TotalOmzet,ModalHPP,LabaBersih,StatusSync'];
+      txs.forEach(t => {
+        rows.push(`${t.id},${t.time},${t.method || 'QRIS'},${t.total},${t.hppTotal || 0},${t.profit},${t.synced ? 'SYNCED' : 'OFFLINE'}`);
+      });
       const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'rekap-kasirku.csv';
+      a.download = 'kasirku-shift-zreport.csv';
       a.click();
     }
 
+    function exportShiftJSON() {
+      const payload = {
+        store_name: 'KEDAI KUJANG',
+        shift_code: 'SHIFT-' + new Date().toISOString().slice(0, 10),
+        exported_at: new Date().toISOString(),
+        transactions: txs
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'kasirku-laravel-sync-batch.json';
+      a.click();
+    }
+
+    // Keyboard shortcuts: '/' focuses search, 'Escape' resets cart
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      } else if (e.key === 'Escape' && document.activeElement.tagName !== 'INPUT') {
+        clearCart();
+      }
+    });
+
+    initTheme();
     render();
   </script>
 </body>

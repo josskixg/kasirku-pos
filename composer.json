@@ -1,0 +1,31 @@
+{
+    "name": "josskixg/kasirku-pos",
+    "description": "Commercial Laravel 11 + Offline-First PWA Point of Sale (POS), HPP/COGS Profit Engine & Web Bluetooth 58mm ESC/POS Thermal Printer Boilerplate for UMKM.",
+    "type": "project",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "pos",
+        "point-of-sale",
+        "escpos",
+        "bluetooth-printer",
+        "qris",
+        "umkm",
+        "pwa",
+        "offline-first"
+    ],
+    "homepage": "https://josskixg.github.io/kasirku-pos/",
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/Unit/EscPosEncoderTest.php"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
